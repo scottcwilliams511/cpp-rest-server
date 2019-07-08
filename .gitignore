@@ -1,0 +1,6 @@
+*.o
+server.exe
+.dist
+ignore
+.vscode/c_cpp_properties.json
+.vscode/settings.json
