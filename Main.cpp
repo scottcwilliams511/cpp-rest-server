@@ -1,8 +1,13 @@
-#include <iostream>
+/**
+ * Main.cpp
+ */
+
 #include <condition_variable>
+#include <iostream>
 #include <mutex>
+
 #include <cpprest/http_client.h>
-#include <cpprest/filestream.h>
+
 #include "Server.hpp"
 
 using namespace utility;                    // Common utilities like string conversions
@@ -58,6 +63,12 @@ int main(int argc, char* argv[]) {
     try {
         // Create server
         Server server(host, port);
+        server.get("/test", [](http_request req) {
+            std::cout <<"Route called???\n";
+            auto res = json::value::object();
+            res["foo"] = json::value::string("bar");
+            req.reply(status_codes::OK, res);
+        });
 
         // Start server.
         server.open().wait();

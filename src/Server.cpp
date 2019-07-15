@@ -1,4 +1,9 @@
+/**
+ * Server.cpp
+ */
+
 #include <iostream>
+
 #include "Server.hpp"
 
 using namespace web;
@@ -40,27 +45,35 @@ std::vector<utility::string_t> Server::requestPath(const http_request& req) {
     return uri::split_path(relativePath);
 }
 
+void Server::get(std::string path, std::function<void(web::http::http_request)> callback) {
+    _router.get(path, callback);
+}
+
 /**
  * @brief Route get requests.
  */
 void Server::_get(http_request req) {
-    auto foo = uri::split_query(req.request_uri().query());
-    for (auto it = foo.begin(); it != foo.end(); it++ ) {
-        std::cout << it->first << ':' << it->second << "\n";
-    }
-    std::cout << "GET: " << req.to_string() << "\n";
+    // auto bar = req.relative_uri().path();
+    // auto foo = uri::split_query(req.request_uri().query());
+    // for (auto it = foo.begin(); it != foo.end(); it++ ) {
+    //     std::cout << it->first << ':' << it->second << "\n";
+    // }
+    // std::cout << "GET: " << req.to_string() << "\n";
     
-    auto path = requestPath(req);
-    if (!path.empty()) {
-        if (path[0] == "test") {
-            auto res = json::value::object();
-            res["foo"] = json::value::string("bar");
-            req.reply(status_codes::OK, res);
-            return;
-        }
-    }
+    // auto path = requestPath(req);
+    // if (!path.empty()) {
+    //     if (path[0] == "test") {
+    //         auto res = json::value::object();
+    //         res["foo"] = json::value::string("bar");
+    //         req.reply(status_codes::OK, res);
+    //         return;
+    //     }
+    // }
 
-    req.reply(status_codes::NotFound);
+    bool success = _router.invoke(req);
+    if (!success) {
+        req.reply(status_codes::NotFound);
+    }
 }
 
 void Server::_post(http_request req) {
