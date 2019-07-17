@@ -9,8 +9,9 @@
 
 class IHandler {
     public:
-        virtual ~IHandler() { }
-        virtual bool invoke(web::http::http_request req) = 0;
+        virtual ~IHandler() { std::cout << "DEAD\n"; }
+        virtual bool invoke(const web::http::http_request& req) = 0;
+        virtual std::string path() const = 0;
 };
 
 #endif // IHANDLER_HPP

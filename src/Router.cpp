@@ -6,26 +6,36 @@
 
 Router::Router() {
     std::cout << "HELLO\n";
+    _path = "";
 }
 
-bool Router::invoke(web::http::http_request req) {
+Router::Router(const std::string& path) {
+    _path = path;
+}
+
+std::string Router::path() const {
+    return _path;
+}
+
+bool Router::invoke(const web::http::http_request& req) {
     utility::string_t path = req.relative_uri().path();
 
-    for (Route route : _getRoutes) {
-        if (route.path == path) {
-            route.method(req);
-            return true;
+    for (auto const& handler : _handlers) {
+        std::string handlerPath = handler->path();
+        // Matching path.
+        if (path == handlerPath){
+            return handler->invoke(req);
         }
+        // Middleware.
+        if (handlerPath.empty()) {
+            handler->invoke(req);
+        }  
     }
 
     return false;
 }
 
-void Router::get(std::string path, std::function<void(web::http::http_request)> callback) {
-    Route route {
-        path,
-        callback,
-    };
-
-    _getRoutes.push_back(route);
+void Router::get(const std::string& path, const std::function<void(const web::http::http_request&)>& method) {
+    std::unique_ptr<IHandler> handler(new Route(path, method));
+    _handlers.push_back(std::move(handler));
 }

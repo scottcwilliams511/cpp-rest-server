@@ -26,7 +26,7 @@ void makeRequest() {
     // Open stream to output file.
     pplx::task<void> requestTask = client.request(methods::GET, builder.to_string())
         // Handle response headers arriving.
-        .then([=](http_response response) {
+        .then([=] (http_response response) {
             printf("Received response status code:%u\n", response.status_code());
 
             // Extract json.
@@ -34,7 +34,7 @@ void makeRequest() {
         })
 
         // Print json.
-        .then([=](pplx::task<json::value> previousTask) {
+        .then([=] (pplx::task<json::value> previousTask) {
             const json::value& value = previousTask.get();
             std::cout << "Value: " << value.serialize() << "\n";
         });
@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
     try {
         // Create server
         Server server(host, port);
-        server.get("/test", [](http_request req) {
+        server.get("/api/v1/test", [] (http_request req) {
             std::cout <<"Route called???\n";
             auto res = json::value::object();
             res["foo"] = json::value::string("bar");

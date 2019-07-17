@@ -19,15 +19,14 @@ class Server {
         pplx::task<void> open();
         pplx::task<void> close();
         std::string endpoint() const;
-        std::vector<utility::string_t> requestPath(const web::http::http_request& req);
+        std::vector<utility::string_t> requestPath(const web::http::http_request& req) const;
 
-        void get(std::string path, std::function<void(web::http::http_request)> callback);
+        void get(const std::string& path, const std::function<void(const web::http::http_request&)>& callback);
     private:
-        void _get(web::http::http_request req);
-        void _post(web::http::http_request req);
-        void _put(web::http::http_request req);
-        void _delete(web::http::http_request req);
-        std::map<std::string, std::function<void(web::http::http_request req)>> _routes;
+        void _get(const web::http::http_request& req);
+        void _post(const web::http::http_request& req);
+        void _put(const web::http::http_request& req);
+        void _delete(const web::http::http_request& req);
 
         web::http::experimental::listener::http_listener _listener;
         Router _router;
